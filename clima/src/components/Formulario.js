@@ -1,38 +1,48 @@
 import React, { useState } from 'react';
+import Error from './Error';
+import PropTypes from 'prop-types';
 
-const Formulario = () => {
-    const [busqueda,guardarBusqueda] = useState({
-        ciudad:'',
-        pais: ''
-    });
 
-    const { ciudad, pais } = busqueda;
+const Formulario = ({busqueda, guardarBusqueda, guardarConsultar}) => {
 
+
+    const [error, guardarError] = useState(false);
+
+    // extraer ciudad y pais
+    const { ciudad, pais } = busqueda;
+
+    // función que coloca los elementos en el state
     const handleChange = e => {
+        // actualizar el state
         guardarBusqueda({
-            ...guardarBusqueda,
-            [e.target.name]:e.target.value
+            ...busqueda,
+            [e.target.name] : e.target.value
         });
     }
-    const [error, guardarError]= useState(false);
 
+    // Cuando el usuario da submit al form
     const handleSubmit = e => {
         e.preventDefault();
-        if(ciudad.trim()==='' || pais.trim()=== ''){
+
+        // validar
+        if(ciudad.trim() === '' || pais.trim() === '') {
             guardarError(true);
             return;
         }
-        guardarError(false);
-    };
 
+        guardarError(false);
+
+        guardarConsultar(true);
+    }
 
     return ( 
         <form
-            onSubmit={handleSubmit}    
+            onSubmit={handleSubmit}
         >
-            {error ? <p className="red darken-4 error">Todos los campos son obligatorios</p>: null}
+            {error ? <Error mensaje="Ambos campos son obligatorios" /> : null }
+            
             <div className="input-field col s12">
-                <input 
+                <input
                     type="text"
                     name="ciudad"
                     id="ciudad"
@@ -41,14 +51,15 @@ const Formulario = () => {
                 />
                 <label htmlFor="ciudad">Ciudad: </label>
             </div>
+
             <div className="input-field col s12">
-                <select 
+                <select
                     name="pais"
                     id="pais"
                     value={pais}
                     onChange={handleChange}
                 >
-                    <option value="">-- Seleccione un pais --</option>
+                    <option value="">-- Seleccione un país --</option>
                     <option value="US">Estados Unidos</option>
                     <option value="MX">México</option>
                     <option value="AR">Argentina</option>
@@ -57,18 +68,24 @@ const Formulario = () => {
                     <option value="ES">España</option>
                     <option value="PE">Perú</option>
                 </select>
-                <label htmlFor="pais">Pais: </label>
+                <label htmlFor="pais">País: </label>
             </div>
+
             <div className="input-field col s12">
-                <input 
+                <input  
                     type="submit"
                     value="Buscar Clima"
                     className="waves-effect waves-light btn-large btn-block yellow accent-4"
                 />
-
             </div>
         </form>
-    );
+     );
+}
+
+Formulario.propTypes = {
+    busqueda : PropTypes.object.isRequired,
+    guardarBusqueda : PropTypes.func.isRequired,
+    guardarConsultar : PropTypes.func.isRequired,
 }
  
 export default Formulario;
